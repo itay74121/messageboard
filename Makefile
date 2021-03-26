@@ -1,6 +1,6 @@
 #!make -f
 
-CXX=clang++-9 
+CXX=clang++-9 -g
 CXXFLAGS=-std=c++2a -Werror -Wsign-conversion
 VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 
@@ -22,6 +22,10 @@ tidy:
 valgrind: demo test
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo 2>&1 | { egrep "lost| at " || true; }
 	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./test 2>&1 | { egrep "lost| at " || true; }
+
+main: main.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o main
+	
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) --compile $< -o $@
