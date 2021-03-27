@@ -24,34 +24,31 @@ namespace ariel
         p->y = min(this->y,other.y);
         return p;
     }
-    bool Board::inside_(Point other)
+    bool inside_(Point other,Board * b)
     {
-        if(other.y <= this->max->y && other.x <= this->max->x && other.y >= this->min->y && other.x >= this->min->x)
-        {
-            return true;
-        }
-        return false;
+        if (b->max == NULL || b->min == NULL)
+            return false;
+        return ( other.y <= b->max->y &&other.x <= b->max->x  &&other.y >= b->min->y  && other.x >= b->min->x);
     }    
-    bool Board::inside_Point(uint x, uint y)
+    bool inside_Point(uint x, uint y,Board * b)
     {
         Point p = Point(x,y);
-        return this->inside_(p);
+        return inside_(p,b);
     }
     string Board::read(uint x,uint y,Direction direction,uint size)
     {        
         Point p = Point(x,y);
         string s;
-        uint temp = size;
         for (size_t i = 0; i < size; i++)
         {
-            s += (this-inside_(p))? this->matrix->at(p.x).at(p.y) : '_';
+            s += (inside_(p,this)) ? this->matrix->at(p.x - this->min->x).at(p.y-this->min->y):'_';
             p.x += (direction == Direction::Horizontal) ? 0:1;
             p.y += (direction == Direction::Horizontal) ? 1:0;
         }
         return s;
     }
 
-    uint Board::post(uint x, uint y, Direction direction,string str)
+    void Board::post(uint x, uint y, Direction direction,string str)
     {        
         Point temp = (direction == Direction::Horizontal)? Point(x,y+str.length()-1):Point(x + str.length()-1,y);
         if(start)
@@ -60,7 +57,7 @@ namespace ariel
             this->min = new Point(x,y);
             this->max = new Point(x,y);
         }
-        if(this->inside_Point(x,y) && this->inside_(temp))
+        if(inside_Point(x,y,this) && inside_(temp,this))
         {   
             Point t = Point(x,y);
             for(uint i = 0;i < str.length();i++)
@@ -69,14 +66,13 @@ namespace ariel
                 t.x = (direction==Direction::Horizontal)? t.x:t.x + 1;
                 t.y = (direction==Direction::Vertical)? t.y:t.y + 1;
             }
-            return str.length();
         }
         else
         {
             Point * max = temp.take_max(*(this->max));
-            Point * min = temp.take_min(*(this->min));  
+            Point * min = Point(x,y).take_min(*(this->min));  
             uint addstart = (this->min->y == min->y)?0:this->min->y - min->y+1;
-            uint addend = (max->y == this->max->y)? 0:max->y - this->max->y;
+            uint addend = (max->y == this->max->y)? 0:max->y - this->max->y+1;
             for (size_t i = 0; i < this->matrix->size() && (addend>0 || addstart>0); i++)
             {
                 (addstart>0)?addtoline(i,true,addstart):0;
@@ -87,11 +83,12 @@ namespace ariel
             addend = (max->x == this->max->x) ? 0:max->x - this->max->x+1;
             (addstart>0)?addlines(true,addstart,newsize):0;
             (addend>0)?addlines(false,addend,newsize):0;
+            ((addend + addstart)==0 && 0==this->matrix->size()) ? addlines(true,1,newsize):0;
             delete this->max;
             delete this->min;
             this->max = max;
             this->min = min;
-            return this->post(x,y,direction,str);
+            this->post(x,y,direction,str);
         }
     }
 

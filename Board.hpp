@@ -50,12 +50,10 @@ namespace ariel
                 delete this->matrix;
             }
             std::string read(uint x,uint y,Direction direction,uint size);
-            uint post(uint x, uint y, Direction direction,std::string str);
+            void post(uint x, uint y, Direction direction,std::string str);
             void show();
             void clear();
         private:
-            bool inside_(Point other);
-            bool inside_Point(uint x, uint y);
             uint addlines(bool start,uint count,uint size);
             uint addtoline(uint line,bool start,uint size);
     };

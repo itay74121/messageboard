@@ -49,13 +49,20 @@ int main(int argc, char const *argv[])
     // addline_end(matrix,2);
     // showmatrix(matrix);
     // delete matrix;
+    // Board b;
+    // string s = "some text";
+    // //cout << "lines: "<<  b.matrix->size() << endl;
+    // b.post(400,500,Direction::Vertical,s);
+    // //cout << "lines: "<<  b.matrix->size() << endl;
+    // b.post(400,502,Direction::Vertical,s);
+    // b.post(402,503,Direction::Horizontal,s);
+    // b.show();
     Board b;
-    string s = "some text";
-    //cout << "lines: "<<  b.matrix->size() << endl;
-    b.post(400,500,Direction::Vertical,s);
-    //cout << "lines: "<<  b.matrix->size() << endl;
-    b.post(400,502,Direction::Vertical,s);
-    b.post(402,503,Direction::Horizontal,s);
+    b.post(0,0,Direction::Horizontal,"abc");
     b.show();
+    Point temp = Point(0,2);
+    cout << "The point: " << b.max->x << " "<< b.max->y << endl;
+   // cout << "result: "<<inside_(temp,&b) << endl;
+   //string s = b.read(0,0,Direction::Horizontal,4);
     return 0;
 }
